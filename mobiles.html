@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphones - XYZ Mobile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; color: #333; }
+        header { background: #0056b3; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        header h1 { font-size: 1.5rem; }
+        
+        /* Search Bar Styles */
+        .search-container { position: relative; flex-grow: 1; max-width: 350px; margin: 0 15px; }
+        .search-container input { width: 100%; padding: 8px 12px; border-radius: 5px; border: none; font-size: 0.9rem; outline: none; }
+        .suggestions-box { position: absolute; top: 100%; left: 0; right: 0; background: white; color: #333; border-radius: 0 0 5px 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1100; max-height: 200px; overflow-y: auto; display: none; margin-top: 2px; }
+        .suggestion-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
+        .suggestion-item:hover { background: #f0f4f8; }
+        .suggestion-item img { width: 30px; height: 30px; object-fit: contain; }
+
+        header a.back-btn { color: white; text-decoration: none; background: #004085; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; white-space: nowrap; }
+        
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .section-title { text-align: center; margin-bottom: 30px; font-size: 2rem; color: #0056b3; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        .product-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 15px; }
+        .product-card h3 { font-size: 1.2rem; margin-bottom: 10px; color: #333; }
+        .product-card p { font-size: 0.95rem; color: #666; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .price { font-size: 1.2rem; font-weight: bold; color: #28a745; margin-bottom: 15px; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .view-btn { background: #0056b3; color: white; border: none; padding: 9px; border-radius: 5px; cursor: pointer; font-size: 0.95rem; font-weight: bold; transition: background 0.3s; }
+        .view-btn:hover { background: #004085; }
+        .buy-btn { background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; text-decoration: none; display: inline-block; transition: background 0.3s; }
+        .buy-btn:hover { background: #218838; }
+
+        /* Modal Popup Styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 10px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; font-weight: bold; cursor: pointer; color: #555; }
+        .modal-title { font-size: 1.5rem; color: #0056b3; margin-bottom: 10px; }
+        .modal-price { font-size: 1.3rem; color: #28a745; font-weight: bold; margin-bottom: 15px; }
+        .modal-desc { font-size: 1rem; color: #444; line-height: 1.6; margin-bottom: 20px; white-space: pre-line; }
+        .modal-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .modal-gallery img { width: 100%; height: 90px; object-fit: cover; border-radius: 5px; border: 1px solid #ddd; cursor: pointer; }
+
+        footer { background: #333; color: white; text-align: center; padding: 20px; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>XYZ Mobile - Smartphones</h1>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search smartphones..." autocomplete="off">
+            <div id="suggestions-box" class="suggestions-box"></div>
+        </div>
+
+        <a href="index.html" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title">Latest Smartphones & Offers</h2>
+        <div class="products-grid" id="product-container">
+            
+            <!-- Default Static Product 1 -->
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=80" alt="Phone 1">
+                <h3>XYZ Alpha 5G (6GB/128GB)</h3>
+                <p>Powerful processor, 50MP camera, 5000mAh battery.</p>
+                <div class="price">₹14,999 <span style="text-decoration: line-through; color: #999; font-size: 0.9rem;">₹18,999</span></div>
+                <div class="btn-group">
+                    <button class="view-btn" onclick="openModal('XYZ Alpha 5G (6GB/128GB)', '₹14,999', 'Powerful processor, 50MP AI camera, 5000mAh battery with 33W fast charging support.', ['https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=80'])">View More</button>
+                    <a href="https://wa.me/919584753005?text=Hello,%20I%20want%20to%20buy%20XYZ%20Alpha%205G" target="_blank" class="buy-btn">Buy on WhatsApp</a>
+                </div>
+            </div>
+
+            <!-- Default Static Product 2 -->
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=400&q=80" alt="Phone 2">
+                <h3>XYZ Prime Pro (8GB/256GB)</h3>
+                <p>AMOLED Display, Fast Charging, Sleek Design.</p>
+                <div class="price">₹21,499 <span style="text-decoration: line-through; color: #999; font-size: 0.9rem;">₹25,999</span></div>
+                <div class="btn-group">
+                    <button class="view-btn" onclick="openModal('XYZ Prime Pro (8GB/256GB)', '₹21,499', 'Super AMOLED Display, Fast Charging, Sleek Design, 64MP Triple Camera Setup.', ['https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=400&q=80'])">View More</button>
+                    <a href="https://wa.me/919876543210?text=Hello,%20I%20want%20to%20buy%20XYZ%20Prime%20Pro" target="_blank" class="buy-btn">Buy on WhatsApp</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Product Details Modal Popup -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 id="modal-name" class="modal-title"></h2>
+            <div id="modal-price" class="modal-price"></div>
+            <p style="font-weight: bold; margin-bottom: 5px; color: #555;">Product Description:</p>
+            <div id="modal-desc" class="modal-desc"></div>
+            <p style="font-weight: bold; margin-bottom: 8px; color: #555;">Gallery Images:</p>
+            <div id="modal-gallery" class="modal-gallery"></div>
+            <a id="modal-whatsapp" href="#" target="_blank" class="buy-btn" style="text-align: center; display: block; margin-top: 15px;">Buy on WhatsApp</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 XYZ Mobile Shop. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Load dynamically added products from Admin Panel
+        const savedProducts = JSON.parse(localStorage.getItem('xyz_products')) || [];
+        const container = document.getElementById('product-container');
+        let mobileList = [];
+
+        savedProducts.forEach(prod => {
+            if(prod.category === 'mobiles') {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                // Ensure gallery handles optional empty arrays gracefully
+                const galleryImages = (prod.gallery && prod.gallery.length > 0) ? prod.gallery : [prod.img];
+                const galleryJSON = JSON.stringify(galleryImages).replace(/"/g, '&quot;');
+
+                card.innerHTML = `
+                    <img src="${prod.img}" alt="${prod.name}">
+                    <h3>${prod.name}</h3>
+                    <p>${prod.desc}</p>
+                    <div class="price">₹${prod.price} ${prod.oldPrice ? `<span style="text-decoration: line-through; color: #999; font-size: 0.9rem;">₹${prod.oldPrice}</span>` : ''}</div>
+                    <div class="btn-group">
+                        <button class="view-btn" onclick="openModal('${prod.name.replace(/'/g, "\\'")}', '₹${prod.price}', '${prod.desc.replace(/'/g, "\\'").replace(/\n/g, " ")}', ${galleryJSON})">View More</button>
+                        <a href="https://wa.me/919876543210?text=Hello,%20I%20want%20to%20buy%20${encodeURIComponent(prod.name)}" target="_blank" class="buy-btn">Buy on WhatsApp</a>
+                    </div>
+                `;
+                container.appendChild(card);
+                mobileList.push({ name: prod.name, img: prod.img });
+            }
+        });
+
+        // Modal Functions
+        function openModal(name, price, desc, images) {
+            document.getElementById('modal-name').innerText = name;
+            document.getElementById('modal-price').innerText = price;
+            document.getElementById('modal-desc').innerText = desc;
+            
+            const galleryContainer = document.getElementById('modal-gallery');
+            galleryContainer.innerHTML = '';
+            
+            images.forEach(imgSrc => {
+                const imgTag = document.createElement('img');
+                imgTag.src = imgSrc;
+                galleryContainer.appendChild(imgTag);
+            });
+
+            document.getElementById('modal-whatsapp').href = `https://wa.me/919876543210?text=Hello,%20I%20want%20to%20buy%20${encodeURIComponent(name)}`;
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Search Autocomplete Logic
+        const searchInput = document.getElementById('search-input');
+        const suggestionsBox = document.getElementById('suggestions-box');
+        
+        mobileList.push({ name: "XYZ Alpha 5G (6GB/128GB)", img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=80" });
+        mobileList.push({ name: "XYZ Prime Pro (8GB/256GB)", img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=400&q=80" });
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            suggestionsBox.innerHTML = '';
+            
+            if (query === '') {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            const filtered = mobileList.filter(m => m.name.toLowerCase().includes(query));
+
+            if (filtered.length > 0) {
+                suggestionsBox.style.display = 'block';
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `<img src="${item.img}" alt=""> <span>${item.name}</span>`;
+                    div.onclick = function() {
+                        searchInput.value = item.name;
+                        suggestionsBox.style.display = 'none';
+                    };
+                    suggestionsBox.appendChild(div);
+                });
+            } else {
+                suggestionsBox.style.display = 'block';
+                suggestionsBox.innerHTML = `<div class="suggestion-item" style="color: #886;">Koi mobile nahi mila</div>`;
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
