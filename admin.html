@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - XYZ Mobile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; color: #333; }
+        header { background: #0056b3; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 1.8rem; }
+        header a { color: white; text-decoration: none; background: #004085; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; }
+        
+        .container { max-width: 700px; margin: 40px auto; padding: 25px; background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        #login-section h2 { margin-bottom: 20px; color: #0056b3; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; }
+        .form-group input[type="file"] { background: #fafafa; padding: 8px; cursor: pointer; }
+        
+        .btn { background: #28a745; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .btn:hover { background: #218838; }
+        
+        #admin-dashboard { display: none; }
+        .success-msg { color: green; margin-top: 10px; text-align: center; font-weight: bold; }
+        .note { font-size: 0.85rem; color: #666; margin-top: 3px; display: block; }
+
+        /* Manage Products Section */
+        .divider { margin: 30px 0; border: 0; border-top: 1px solid #ddd; }
+        .manager-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .product-list-title { color: #0056b3; font-size: 1.3rem; margin: 0; }
+        
+        /* Admin Search Bar */
+        .admin-search-input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; outline: none; width: 220px; }
+        
+        .admin-product-item { display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; padding: 10px 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #eee; gap: 15px; }
+        .admin-product-item img { width: 45px; height: 45px; object-fit: contain; border-radius: 4px; background: #fff; border: 1px solid #ddd; }
+        .admin-product-info { flex-grow: 1; }
+        .admin-product-info h4 { font-size: 1rem; color: #333; margin-bottom: 2px; }
+        .admin-product-info p { font-size: 0.85rem; color: #666; }
+        .delete-btn { background: #dc3545; color: white; border: none; padding: 7px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: background 0.3s; white-space: nowrap; }
+        .delete-btn:hover { background: #c82333; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>XYZ Mobile - Admin Panel</h1>
+        <a href="index.html">← Back to Website</a>
+    </header>
+
+    <div class="container">
+        <!-- Login Section -->
+        <div id="login-section">
+            <h2>Shop Owner Login</h2>
+            <div class="form-group">
+                <label>Admin Password:</label>
+                <input type="password" id="admin-pass" placeholder="Enter password (default: admin123)">
+            </div>
+            <button class="btn" onclick="checkPassword()">Login</button>
+            <p id="error-msg" style="color: red; margin-top: 10px; text-align: center;"></p>
+        </div>
+
+        <!-- Admin Dashboard Form & Management -->
+        <div id="admin-dashboard">
+            <h2 style="color: #0056b3; margin-bottom: 20px; text-align: center;">Naya Product Add Karein</h2>
+            
+            <div class="form-group">
+                <label>Category Chunein:</label>
+                <select id="p-category">
+                    <option value="mobiles">Smartphones</option>
+                    <option value="earbuds">Earbuds & Audio</option>
+                    <option value="chargers">Chargers & Cables</option>
+                    <option value="combos">Display Combos</option>
+                    <option value="covers">Phone Covers & Glass</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Product Ka Naam:</label>
+                <input type="text" id="p-name" placeholder="Jaise: XYZ Ultra 5G">
+            </div>
+
+            <div class="form-group">
+                <label>Description / Features:</label>
+                <textarea id="p-desc" rows="3" placeholder="Jaise: 8GB RAM, 128GB Storage, 5000mAh Battery..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Current Price (₹):</label>
+                <input type="number" id="p-price" placeholder="Jaise: 14999">
+            </div>
+
+            <div class="form-group">
+                <label>MRP / Old Price (₹) (Optional):</label>
+                <input type="number" id="p-oldprice" placeholder="Jaise: 18999">
+            </div>
+
+            <div class="form-group">
+                <label>1. Thumbnail Image (Main Photo - Zaroori hai):</label>
+                <input type="file" id="p-thumb" accept="image/*">
+                <span class="note">Ye photo card par main view me dikhegi.</span>
+            </div>
+
+            <div class="form-group">
+                <label>2. Gallery Images (Optional - Max 10 photos):</label>
+                <input type="file" id="p-gallery" accept="image/*" multiple>
+                <span class="note">Agar nahi dalna chahte toh ise khali chhod sakte hain.</span>
+            </div>
+
+            <button class="btn" onclick="addProduct()">Product Publish Karein</button>
+            <p class="success-msg" id="success-msg"></p>
+
+            <hr class="divider">
+
+            <!-- Delete / Manage Products Section with Search Bar -->
+            <div class="manager-header">
+                <h3 class="product-list-title">Products Manager</h3>
+                <input type="text" id="admin-search" class="admin-search-input" placeholder="Search product to delete..." oninput="loadAdminProductList()">
+            </div>
+            <div id="admin-product-list">
+                <!-- Dynamic products list will load here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkPassword() {
+            const pass = document.getElementById('admin-pass').value;
+            if(pass === 'admin123') {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+                loadAdminProductList(); 
+            } else {
+                document.getElementById('error-msg').innerText = 'Galat Password! Kripya sahi password dalein.';
+            }
+        }
+
+        async function addProduct() {
+            const category = document.getElementById('p-category').value;
+            const name = document.getElementById('p-name').value;
+            const desc = document.getElementById('p-desc').value;
+            const price = document.getElementById('p-price').value;
+            const oldPrice = document.getElementById('p-oldprice').value;
+            
+            const thumbInput = document.getElementById('p-thumb');
+            const galleryInput = document.getElementById('p-gallery');
+
+            if(!name || !price || thumbInput.files.length === 0) {
+                alert('Kripya Product ka Naam, Price aur Thumbnail Image zaroor bharein!');
+                return;
+            }
+
+            try {
+                const thumbBase64 = await toBase64(thumbInput.files[0]);
+
+                let galleryBase64Array = [];
+                if(galleryInput.files.length > 0) {
+                    const files = galleryInput.files;
+                    const limit = Math.min(files.length, 10);
+
+                    for(let i = 0; i < limit; i++) {
+                        const b64 = await toBase64(files[i]);
+                        galleryBase64Array.push(b64);
+                    }
+                }
+
+                const newProduct = { 
+                    category, 
+                    name, 
+                    desc: desc || "Koi description uplabdh nahi hai.", 
+                    price, 
+                    oldPrice, 
+                    img: thumbBase64, 
+                    gallery: galleryBase64Array 
+                };
+
+                let products = JSON.parse(localStorage.getItem('xyz_products')) || [];
+                products.push(newProduct);
+                localStorage.setItem('xyz_products', JSON.stringify(products));
+
+                document.getElementById('success-msg').innerText = 'Product safalpurvak publish ho gaya hai!';
+                
+                // Clear form
+                document.getElementById('p-name').value = '';
+                document.getElementById('p-desc').value = '';
+                document.getElementById('p-price').value = '';
+                document.getElementById('p-oldprice').value = '';
+                thumbInput.value = '';
+                galleryInput.value = '';
+
+                // Clear search and refresh list
+                document.getElementById('admin-search').value = '';
+                loadAdminProductList();
+                
+                setTimeout(() => {
+                    document.getElementById('success-msg').innerText = '';
+                }, 3000);
+            } catch (error) {
+                alert('Image upload karne mein samasya aayi. Kripya choti size ki image select karein.');
+                console.error(error);
+            }
+        }
+
+        // Load and render filtered products inside Admin Panel
+        function loadAdminProductList() {
+            const listContainer = document.getElementById('admin-product-list');
+            listContainer.innerHTML = '';
+
+            let products = JSON.parse(localStorage.getItem('xyz_products')) || [];
+            const searchQuery = document.getElementById('admin-search').value.toLowerCase().trim();
+
+            // Keep track of original array indices so search filtering doesn't delete wrong items
+            const filteredProducts = products.map((prod, index) => ({ ...prod, originalIndex: index }))
+                                             .filter(prod => prod.name.toLowerCase().includes(searchQuery) || prod.category.toLowerCase().includes(searchQuery));
+
+            if(filteredProducts.length === 0) {
+                listContainer.innerHTML = '<p style="color: #777; font-size: 0.9rem; text-align: center; padding: 10px;">Koi matching product nahi mila.</p>';
+                return;
+            }
+
+            filteredProducts.forEach((prod) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'admin-product-item';
+                itemDiv.innerHTML = `
+                    <img src="${prod.img}" alt="${prod.name}">
+                    <div class="admin-product-info">
+                        <h4>${prod.name}</h4>
+                        <p>Category: <b>${prod.category}</b> | Price: <b>₹${prod.price}</b></p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteProduct(${prod.originalIndex})">Delete</button>
+                `;
+                listContainer.appendChild(itemDiv);
+            });
+        }
+
+        // Delete product function using original index
+        function deleteProduct(index) {
+            if(confirm('Kya aap sach mein is product ko delete karna chahte hain?')) {
+                let products = JSON.parse(localStorage.getItem('xyz_products')) || [];
+                products.splice(index, 1); 
+                localStorage.setItem('xyz_products', JSON.stringify(products));
+                loadAdminProductList(); 
+            }
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+    </script>
+</body>
+</html>
